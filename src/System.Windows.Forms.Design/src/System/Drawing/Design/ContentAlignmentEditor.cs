@@ -12,8 +12,6 @@ namespace System.Drawing.Design
     /// </summary>
     public partial class ContentAlignmentEditor : UITypeEditor
     {
-        private ContentUI _contentUI;
-
         /// <summary>
         /// Edits the given object value using the editor style provided by GetEditStyle.
         /// </summary>
@@ -24,21 +22,20 @@ namespace System.Drawing.Design
                 return value;
             }
 
-            IWindowsFormsEditorService edSvc = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+            var edSvc = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
             if (edSvc is null)
             {
                 return value;
             }
 
-            if (_contentUI is null)
+            // To avoid scaling and resulting perf issues, we will be creating the UI everytime it is requested.
+            using (ContentUI contentUI = new())
             {
-                _contentUI = new ContentUI();
+                contentUI.Start(edSvc, value);
+                edSvc.DropDownControl(contentUI);
+                value = contentUI.Value;
+                contentUI.End();
             }
-
-            _contentUI.Start(edSvc, value);
-            edSvc.DropDownControl(_contentUI);
-            value = _contentUI.Value;
-            _contentUI.End();
 
             return value;
         }

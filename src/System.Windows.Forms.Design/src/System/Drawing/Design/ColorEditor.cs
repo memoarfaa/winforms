@@ -21,8 +21,6 @@ namespace System.Drawing.Design
     [CLSCompliant(false)]
     public class ColorEditor : UITypeEditor
     {
-        private ColorUI _colorUI;
-
         /// <summary>
         ///  Edits the given object value using the editor style provided by ColorEditor.GetEditStyle.
         /// </summary>
@@ -38,20 +36,19 @@ namespace System.Drawing.Design
                 return value;
             }
 
-            if (_colorUI is null)
+            using (ColorUI colorUI = new(this))
             {
-                _colorUI = new ColorUI(this);
+                colorUI.Start(edSvc, value);
+                edSvc.DropDownControl(colorUI);
+
+                if (colorUI.Value is Color colorValue && colorValue != Color.Empty)
+                {
+                    value = colorValue;
+                }
+
+                colorUI.End();
             }
 
-            _colorUI.Start(edSvc, value);
-            edSvc.DropDownControl(_colorUI);
-
-            if (_colorUI.Value is Color colorValue && colorValue != Color.Empty)
-            {
-                value = colorValue;
-            }
-
-            _colorUI.End();
             return value;
         }
 

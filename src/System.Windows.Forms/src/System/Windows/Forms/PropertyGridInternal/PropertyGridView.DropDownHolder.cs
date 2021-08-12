@@ -603,6 +603,9 @@ namespace System.Windows.Forms.PropertyGridInternal
                     SuspendLayout();
                     Controls.Add(control);
 
+                    // Control need to be visible to account for DPI_CHANGED events and determing size.
+                    control.Dock = DockStyle.Fill;
+                    control.Visible = true;
                     Size size = new(2 * DropDownHolderBorder + control.Width, 2 * DropDownHolderBorder + control.Height);
 
                     // Now check for an editor, and show the link if there is one.
@@ -649,8 +652,6 @@ namespace System.Windows.Forms.PropertyGridInternal
 
                     // Set the size.
                     Size = size;
-                    control.Dock = DockStyle.Fill;
-                    control.Visible = true;
 
                     if (editor is not null)
                     {

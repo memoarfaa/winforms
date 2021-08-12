@@ -125,7 +125,7 @@ namespace System.Drawing.Design
                 Value = null;
             }
 
-            private void ResetAnchorStyle(bool toNone = false)
+            private void SetAnchorStyle(bool toNone = false)
             {
                 const AnchorStyles DefaultCenterAnchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
                 const AnchorStyles DefaultRightAnchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -156,7 +156,7 @@ namespace System.Drawing.Design
                 try
                 {
                     // This is to invoke parent changed message that help rescaling the controls based on parent font (when it changed)
-                    Controls.Clear();
+                   // Controls.Clear();
 
                     //local cache.
                     var pixel_24 = DpiHelper.ConvertToGivenDpiPixel(24, _pixelFactor);
@@ -165,39 +165,44 @@ namespace System.Drawing.Design
                     var pixel_59 = DpiHelper.ConvertToGivenDpiPixel(59, _pixelFactor);
                     var pixel_64 = DpiHelper.ConvertToGivenDpiPixel(64, _pixelFactor);
                     var pixel_89 = DpiHelper.ConvertToGivenDpiPixel(89, _pixelFactor);
-                    var pixel_99 = DpiHelper.ConvertToGivenDpiPixel(99, _pixelFactor);
+                    //var pixel_99 = DpiHelper.ConvertToGivenDpiPixel(99, _pixelFactor);
                     var pixel_125 = DpiHelper.ConvertToGivenDpiPixel(125, _pixelFactor);
+                    var padding_8 = DpiHelper.ConvertToGivenDpiPixel(8, _pixelFactor);
 
-                    Size = new Size(pixel_125, pixel_89);
+                    bool widthAdjusted = Size.Width != 0;
 
-                    _topLeft.Size = new Size(pixel_24, pixel_25);
+                    Size = new Size(widthAdjusted ? Size.Width : pixel_125, pixel_89);
+                    var centerRadioSize = new Size(widthAdjusted ? Size.Width - 2 * (pixel_24 + padding_8) : pixel_59, pixel_25);
+                    var outterRadioSize = new Size(pixel_24, pixel_25);
 
-                    _topCenter.Location = new Point(pixel_32, 0);
-                    _topCenter.Size = new Size(pixel_59, pixel_25);
+                    _topLeft.Size = outterRadioSize;
 
-                    _topRight.Location = new Point(pixel_99, 0);
-                    _topRight.Size = new Size(pixel_24, pixel_25);
+                    _topCenter.Location = new Point(_topLeft.Right + padding_8, 0);
+                    _topCenter.Size = centerRadioSize;
+
+                    _topRight.Location = new Point(_topCenter.Right + padding_8, 0);
+                    _topRight.Size = outterRadioSize;
 
                     _middleLeft.Location = new Point(0, pixel_32);
-                    _middleLeft.Size = new Size(pixel_24, pixel_25);
+                    _middleLeft.Size = outterRadioSize;
 
-                    _middleCenter.Location = new Point(pixel_32, pixel_32);
-                    _middleCenter.Size = new Size(pixel_59, pixel_25);
+                    _middleCenter.Location = new Point(_middleLeft.Right + padding_8, pixel_32);
+                    _middleCenter.Size = centerRadioSize;
 
-                    _middleRight.Location = new Point(pixel_99, pixel_32);
-                    _middleRight.Size = new Size(pixel_24, pixel_25);
+                    _middleRight.Location = new Point(_middleCenter.Right + padding_8, pixel_32);
+                    _middleRight.Size = outterRadioSize;
 
                     _bottomLeft.Location = new Point(0, pixel_64);
-                    _bottomLeft.Size = new Size(pixel_24, pixel_25);
+                    _bottomLeft.Size = outterRadioSize;
 
-                    _bottomCenter.Location = new Point(pixel_32, pixel_64);
-                    _bottomCenter.Size = new Size(pixel_59, pixel_25);
+                    _bottomCenter.Location = new Point(_bottomLeft.Right + padding_8, pixel_64);
+                    _bottomCenter.Size = centerRadioSize;
 
-                    _bottomRight.Location = new Point(pixel_99, pixel_64);
-                    _bottomRight.Size = new Size(pixel_24, pixel_25);
+                    _bottomRight.Location = new Point(_bottomCenter.Right + padding_8, pixel_64);
+                    _bottomRight.Size = outterRadioSize;
 
-                    ResetAnchorStyle();
-                    Controls.AddRange(new Control[]
+                    SetAnchorStyle();
+                    /*Controls.AddRange(new Control[]
                     {
                         _bottomRight,
                         _bottomCenter,
@@ -208,7 +213,7 @@ namespace System.Drawing.Design
                         _topRight,
                         _topCenter,
                         _topLeft
-                    });
+                    });*/
                 }
                 finally
                 {
@@ -218,71 +223,93 @@ namespace System.Drawing.Design
 
             private void InitComponent()
             {
-                BackColor = SystemColors.Control;
-                ForeColor = SystemColors.ControlText;
-                AccessibleName = SR.ContentAlignmentEditorAccName;
+                SuspendLayout();
+                try
+                {
+                    BackColor = SystemColors.Control;
+                    ForeColor = SystemColors.ControlText;
+                    AccessibleName = SR.ContentAlignmentEditorAccName;
 
-                _topLeft.TabIndex = 8;
-                _topLeft.Text = string.Empty;
-                _topLeft.Appearance = Appearance.Button;
-                _topLeft.Click += new EventHandler(OptionClick);
-                _topLeft.AccessibleName = SR.ContentAlignmentEditorTopLeftAccName;
+                    _topLeft.TabIndex = 8;
+                    _topLeft.Text = string.Empty;
+                    _topLeft.Appearance = Appearance.Button;
+                    _topLeft.Click += new EventHandler(OptionClick);
+                    _topLeft.AccessibleName = SR.ContentAlignmentEditorTopLeftAccName;
 
-                _topCenter.TabIndex = 0;
-                _topCenter.Text = string.Empty;
-                _topCenter.Appearance = Appearance.Button;
-                _topCenter.Click += new EventHandler(OptionClick);
-                _topCenter.AccessibleName = SR.ContentAlignmentEditorTopCenterAccName;
+                    _topCenter.TabIndex = 0;
+                    _topCenter.Text = string.Empty;
+                    _topCenter.Appearance = Appearance.Button;
+                    _topCenter.Click += new EventHandler(OptionClick);
+                    _topCenter.AccessibleName = SR.ContentAlignmentEditorTopCenterAccName;
 
-                _topRight.TabIndex = 1;
-                _topRight.Text = string.Empty;
-                _topRight.Appearance = Appearance.Button;
-                _topRight.Click += new EventHandler(OptionClick);
-                _topRight.AccessibleName = SR.ContentAlignmentEditorTopRightAccName;
+                    _topRight.TabIndex = 1;
+                    _topRight.Text = string.Empty;
+                    _topRight.Appearance = Appearance.Button;
+                    _topRight.Click += new EventHandler(OptionClick);
+                    _topRight.AccessibleName = SR.ContentAlignmentEditorTopRightAccName;
 
-                _middleLeft.TabIndex = 2;
-                _middleLeft.Text = string.Empty;
-                _middleLeft.Appearance = Appearance.Button;
-                _middleLeft.Click += new EventHandler(OptionClick);
-                _middleLeft.AccessibleName = SR.ContentAlignmentEditorMiddleLeftAccName;
+                    _middleLeft.TabIndex = 2;
+                    _middleLeft.Text = string.Empty;
+                    _middleLeft.Appearance = Appearance.Button;
+                    _middleLeft.Click += new EventHandler(OptionClick);
+                    _middleLeft.AccessibleName = SR.ContentAlignmentEditorMiddleLeftAccName;
 
-                _middleCenter.TabIndex = 3;
-                _middleCenter.Text = string.Empty;
-                _middleCenter.Appearance = Appearance.Button;
-                _middleCenter.Click += new EventHandler(OptionClick);
-                _middleCenter.AccessibleName = SR.ContentAlignmentEditorMiddleCenterAccName;
+                    _middleCenter.TabIndex = 3;
+                    _middleCenter.Text = string.Empty;
+                    _middleCenter.Appearance = Appearance.Button;
+                    _middleCenter.Click += new EventHandler(OptionClick);
+                    _middleCenter.AccessibleName = SR.ContentAlignmentEditorMiddleCenterAccName;
 
-                _middleRight.TabIndex = 4;
-                _middleRight.Text = string.Empty;
-                _middleRight.Appearance = Appearance.Button;
-                _middleRight.Click += new EventHandler(OptionClick);
-                _middleRight.AccessibleName = SR.ContentAlignmentEditorMiddleRightAccName;
+                    _middleRight.TabIndex = 4;
+                    _middleRight.Text = string.Empty;
+                    _middleRight.Appearance = Appearance.Button;
+                    _middleRight.Click += new EventHandler(OptionClick);
+                    _middleRight.AccessibleName = SR.ContentAlignmentEditorMiddleRightAccName;
 
-                _bottomLeft.TabIndex = 5;
-                _bottomLeft.Text = string.Empty;
-                _bottomLeft.Appearance = Appearance.Button;
-                _bottomLeft.Click += new EventHandler(OptionClick);
-                _bottomLeft.AccessibleName = SR.ContentAlignmentEditorBottomLeftAccName;
+                    _bottomLeft.TabIndex = 5;
+                    _bottomLeft.Text = string.Empty;
+                    _bottomLeft.Appearance = Appearance.Button;
+                    _bottomLeft.Click += new EventHandler(OptionClick);
+                    _bottomLeft.AccessibleName = SR.ContentAlignmentEditorBottomLeftAccName;
 
-                _bottomCenter.TabIndex = 6;
-                _bottomCenter.Text = string.Empty;
-                _bottomCenter.Appearance = Appearance.Button;
-                _bottomCenter.Click += new EventHandler(OptionClick);
-                _bottomCenter.AccessibleName = SR.ContentAlignmentEditorBottomCenterAccName;
+                    _bottomCenter.TabIndex = 6;
+                    _bottomCenter.Text = string.Empty;
+                    _bottomCenter.Appearance = Appearance.Button;
+                    _bottomCenter.Click += new EventHandler(OptionClick);
+                    _bottomCenter.AccessibleName = SR.ContentAlignmentEditorBottomCenterAccName;
 
-                _bottomRight.TabIndex = 7;
-                _bottomRight.Text = string.Empty;
-                _bottomRight.Appearance = Appearance.Button;
-                _bottomRight.Click += new EventHandler(OptionClick);
-                _bottomRight.AccessibleName = SR.ContentAlignmentEditorBottomRightAccName;
-                SetDimensions();
+                    _bottomRight.TabIndex = 7;
+                    _bottomRight.Text = string.Empty;
+                    _bottomRight.Appearance = Appearance.Button;
+                    _bottomRight.Click += new EventHandler(OptionClick);
+                    _bottomRight.AccessibleName = SR.ContentAlignmentEditorBottomRightAccName;
+                    SetDimensions();
+                    Controls.AddRange(new Control[]
+                        {
+                        _bottomRight,
+                        _bottomCenter,
+                        _bottomLeft,
+                        _middleRight,
+                        _middleCenter,
+                        _middleLeft,
+                        _topRight,
+                        _topCenter,
+                        _topLeft
+                        });
+                }
+                finally
+                {
+                    ResumeLayout();
+                }
             }
 
             protected override void RescaleConstantsForDpi(int deviceDpiOld, int deviceDpiNew)
             {
                 var factor = (double)deviceDpiNew / deviceDpiOld;
                 _pixelFactor *= factor;
-                ResetAnchorStyle(toNone: true);
+
+                // Anchors need to be removed while scaling.
+                SetAnchorStyle(toNone: true);
                 SetDimensions();
             }
 

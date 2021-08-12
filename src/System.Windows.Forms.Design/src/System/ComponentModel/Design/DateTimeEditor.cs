@@ -28,7 +28,7 @@ namespace System.ComponentModel.Design
                 return value;
             }
 
-            using (DateTimeUI dateTimeUI = new DateTimeUI())
+            using (DateTimeUI dateTimeUI = new())
             {
                 dateTimeUI.Start(edSvc, value);
                 edSvc.DropDownControl(dateTimeUI);
