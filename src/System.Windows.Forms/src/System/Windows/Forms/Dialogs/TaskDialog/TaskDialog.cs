@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms.Analyzers.Diagnostics;
@@ -907,6 +908,78 @@ public partial class TaskDialog : IWin32Window
         PInvoke.SetWindowText(_handle, caption);
     }
 
+   
+    private static unsafe string GetClassName(HWND hWnd)
+    {
+        int length = 0;
+        Span<char> buffer = stackalloc char[PInvoke.MaxClassName];
+        fixed (char* lpClassName = buffer)
+        {
+            length = PInvoke.GetClassName(hWnd, lpClassName, buffer.Length);
+        }
+
+        return new string(buffer[..length]);
+    }
+
+    private PageSubclassHandler _handler;
+
+    private   BOOL SetThemeRecursive(HWND handle)
+    {
+        string className = GetClassName(handle);
+        Debug.WriteLine(className);
+        PInvoke.SetClassLong(handle, GET_CLASS_LONG_INDEX.GCL_HBRBACKGROUND, PInvoke.CreateSolidBrush(SystemColors.Control));
+        if (!string.IsNullOrEmpty(className))
+        {
+            if (className.Equals("Button", StringComparison.OrdinalIgnoreCase))
+            {
+               
+
+            }
+
+            else if (className.Equals("DirectUIHWND", StringComparison.OrdinalIgnoreCase))
+            {
+
+                _handler = new PageSubclassHandler(handle);
+                _handler.Open();
+            }
+        }
+
+        PInvoke.EnumChildWindows(handle, SetThemeRecursive);
+        if (className.Equals("DirectUIHWND", StringComparison.OrdinalIgnoreCase))
+        {
+            PInvoke.SetWindowTheme(handle, "DarkMode_Explorer", null);
+        }
+
+        else if (className.Equals("BUTTON", StringComparison.OrdinalIgnoreCase))
+        {
+
+            PInvoke.SetWindowTheme(handle, "DarkMode_Explorer", null);
+        }
+        else if (className.Equals("CtrlNotifySink", StringComparison.OrdinalIgnoreCase))
+        {
+            HWND pearent = PInvoke.GetParent(handle);
+
+            ButtonWindow native = new ButtonWindow();
+            native.AssignHandle(handle);
+        }
+
+        else if (className.Equals("SysLink", StringComparison.OrdinalIgnoreCase))
+        {
+
+        }
+
+        else if (className.Equals("#32770", StringComparison.OrdinalIgnoreCase))
+        {
+            PInvoke.SetWindowTheme(handle, "DarkMode_Explorer", null);
+          //  ButtonWindow native = new ButtonWindow();
+          //  native.AssignHandle(handle);
+
+        }
+
+         else PInvoke.SetWindowTheme(handle, "DarkMode_Explorer", null);
+        return true;
+    }
+
     private HRESULT HandleTaskDialogCallback(
         HWND hWnd,
         TASKDIALOG_NOTIFICATIONS notification,
@@ -925,6 +998,7 @@ public partial class TaskDialog : IWin32Window
             {
                 // Subclass the window as early as possible after the window handle
                 // is available.
+                SetThemeRecursive(_handle);
                 SubclassWindow();
             }
 

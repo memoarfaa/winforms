@@ -11,6 +11,10 @@ ApplicationConfiguration.Initialize();
 
 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture;
+#pragma warning disable WFO5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+Application.SetColorMode(SystemColorMode.Dark);
+#pragma warning restore WFO5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
 
 try
 {
@@ -18,7 +22,6 @@ try
     {
         Icon = SystemIcons.GetStockIcon(StockIconId.Shield, StockIconOptions.SmallIcon)
     };
-
     Application.Run(form);
 }
 catch (Exception)

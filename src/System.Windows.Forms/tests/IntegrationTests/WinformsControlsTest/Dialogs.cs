@@ -111,6 +111,7 @@ public partial class Dialogs : Form
     private void btnPrintDialog_Click(object sender, EventArgs e)
     {
         DisposeIfNeeded();
+        printDialog1.UseEXDialog = false;
         propertyGrid1.SelectedObject = printDialog1;
     }
 

@@ -1,6 +1,6 @@
 @echo off
+cd /d %~dp0
 setlocal enabledelayedexpansion
-
 :: This command launches a Visual Studio solution with environment variables required to use a local version of the .NET Core SDK.
 
 :: This tells .NET Core to use the same dotnet.exe that build scripts use
